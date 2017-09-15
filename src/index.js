@@ -1,7 +1,7 @@
 'use strict';
 
 import React from 'react';
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 import './index.less';
 
 class ReactSwipeLoad extends React.Component {
@@ -15,7 +15,7 @@ class ReactSwipeLoad extends React.Component {
 }
 
 ReactSwipeLoad.propTypes = {
-  
+
 };
 
 ReactSwipeLoad.displayName = 'ReactSwipeLoad';

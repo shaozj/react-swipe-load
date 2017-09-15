@@ -1,0 +1,22 @@
+{
+  "entry": "src/index.test.js",
+  "disableCSSModules": true,
+  "publicPath": "/",
+  "outputPath": "./build",
+  "useBabelrc": false,
+  "extraBabelPlugins": [
+    ["import", [{ "libraryName": "antd", "style": true }]]
+  ],
+  "extraBabelPresets": [],
+  "extraPostCSSPlugins": [],
+  "autoprefixer": null,
+  "proxy": null,
+  "externals": null,
+  "multipage": false,
+  "define": null,
+  "env": null,
+  "theme": null,
+  "port": 8011,
+  "dll": false,
+  "dllEntry": []
+}

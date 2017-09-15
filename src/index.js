@@ -41,9 +41,9 @@ class SwipeLoad extends React.Component {
     const { children, onBottomLoad, bottomNode } = this.props;
 
     return (
-      <div>
+      <div className="uniform-cpnt-SwipeLoad">
         {children}
-        <div ref="bottomNode">
+        <div ref="bottomNode" className="sl-bottom-node">
         { // 如果需要底部加载，提前在下方插入 dom
           onBottomLoad ? bottomNode['pulling'] : '' // 上拉阶段
         }

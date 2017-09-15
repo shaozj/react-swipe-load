@@ -4,9 +4,7 @@
   "publicPath": "/",
   "outputPath": "./build",
   "useBabelrc": false,
-  "extraBabelPlugins": [
-    ["import", [{ "libraryName": "antd", "style": true }]]
-  ],
+  "extraBabelPlugins": null,
   "extraBabelPresets": [],
   "extraPostCSSPlugins": [],
   "autoprefixer": null,

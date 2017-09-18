@@ -97,6 +97,17 @@ class SwipeLoad extends React.Component {
 
       this.setState({ topDomHeight: this._offsetY });
     }
+    // 上拉加载
+    else if (this.props.onBottomLoad &&
+      !this.loading &&
+      diffY < 0 &&
+      (scrollTop + winHeight) > (scrollHeight - this.props.bottomThreshold))
+    {
+      this._place = 'bottom';
+      this.loading = true;
+      this.setState({ bottomState: 'loading' });
+      this.props.onBottomLoad && this.props.onBottomLoad(this);
+    }
 
   }
 
@@ -145,20 +156,15 @@ class SwipeLoad extends React.Component {
     }
   }
 
-  // 加载底部更多内容
-  loadDown() {
-    this.props.onBottomLoad && this.props.onBottomLoad();
-  }
-
   // 重置，下拉刷新后，需要重置状态
   reset() {
-    this.loading = false;
-    if (this._place = 'top') {
+    if (this._place === 'top') {
       const topDomHeight = 0;
       this.setState({ topDomHeight });
-    } else {
-
+    } else if (this._place === 'bottom') {
+      this.setState({ bottomState: 'normal' });
     }
+    this.loading = false;
   }
 
   render() {

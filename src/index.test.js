@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import SwipeLoad from './index';
 import './index.test.less';
 
-const mockData = [
+const mockData1 = [
   {
     text: '测试数据测试数据测试数据',
     img: 'http://ykimg.alicdn.com/develop/image/2017-09-14/c47d007485407d06fa4b84b10da3627d.jpg'
@@ -63,9 +63,21 @@ const mockData2 = [
 
 class Test extends React.Component {
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      mockData: mockData1
+    };
+  }
+
   onBottomLoad = (SwipeLoad) => {
     console.log('on bottom load');  // eslint-disable-line
-    SwipeLoad.reset();
+    setTimeout(() => {
+      const mockData = mockData1.concat(mockData2);
+      this.setState({ mockData });
+      SwipeLoad.reset();
+    }, 1500);
   }
 
   onTopRefresh = (SwipeLoad) => {
@@ -75,6 +87,7 @@ class Test extends React.Component {
   }
 
   render() {
+    const { mockData } = this.state;
     const props = {
       onBottomLoad: this.onBottomLoad,
       onTopRefresh: this.onTopRefresh

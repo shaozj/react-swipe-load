@@ -178,11 +178,12 @@ class SwipeLoad extends React.Component {
       const topDomHeight = 0;
       this.setState({ topDomHeight });
     } else if (this._place === 'bottom') {
-      if (noMoreData) {
-        this.setState({ bottomState: 'noMoreData' });
-      } else {
-        this.setState({ bottomState: 'pull' });
-      }
+      this.setState({ bottomState: 'pull' });
+    }
+    if (noMoreData) {
+      this.setState({ bottomState: 'noMoreData' });
+    } else {
+      this.setState({ bottomState: 'pull' });
     }
     this.loading = false;
   }

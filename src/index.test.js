@@ -75,12 +75,12 @@ class Test extends React.Component {
   }
 
   render() {
-    const porps = {
+    const props = {
       onBottomLoad: this.onBottomLoad,
       onTopRefresh: this.onTopRefresh
     };
 
-    return  <SwipeLoad {...porps}>
+    return  <SwipeLoad {...props}>
               {
                 mockData.map((item, index) => (
                   <div className="item" key={index} href="#">

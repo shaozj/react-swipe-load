@@ -6,7 +6,6 @@
   ],
   "plugins": [
     "add-module-exports",
-    "react-require",
-    ["import", { "libraryName": "antd", "style": true }]
+    "react-require"
   ]
 }

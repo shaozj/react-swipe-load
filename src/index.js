@@ -2,31 +2,76 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { on, off } from './event';
 import './index.less';
 
 class SwipeLoad extends React.Component {
-  componentDidMount() {
-    const bottomNode = this.refs.bottomNode;
-    // 计算底部提前加载距离
-    if(!!bottomNode && !this.props.threshold) {
-      // 默认滑到加载区2/3处时加载
-      this._threshold = Math.floor(bottomNode.scrollHeight * 1/3);
-    } else {
-      this._threshold = this.props.threshold;
-    }
+  constructor(props) {
+    super(props);
 
-    // 获取文档高度
-    this._scrollContentHeight = document.body.scrollHeight;
+    this.state = {
+      topState: 'normal', // 'normal', 'pull', 'update', 'loading'
+      bottomState: 'normal' // 'normal', 'pull', 'loading', 'noData'
+    };
+  }
+
+  componentDidMount() {
+    this._scrollNode = document.body; // 写死滚动区域为 body
+    const scrollNode = this._scrollNode;
+
     // 获取win显示区高度
     this._windowHeight = document.documentElement.clientHeight;
 
     this.autoLoad();
+
+    // 监听窗口调整
+    on(window, 'resize', () => {
+      clearTimeout(this.timer);
+      this.timer = setTimeout(() => {
+        // 重新获取win显示区高度
+        this._windowHeight = document.documentElement.clientHeight;
+        this.autoLoad();
+      }, 150);
+    });
+
+    // 监听触摸事件
+    on(scrollNode, 'touchstart', e => {
+      if (!this.loading) {
+        this.onTouchstart(e);
+      }
+    });
+
+    on(scrollNode, 'touchmode', e => {
+      if (!this.loading) {
+        this.onTouchmove(e);
+      }
+    });
+
+    on(scrollNode, 'touchend', e => {
+      if (!this.loading) {
+        this.onTouchend(e);
+      }
+    });
+  }
+
+  onTouchstart() {
+
+  }
+
+  onTouchmove() {
+
+  }
+
+  onTouchend() {
+
   }
 
   // 如果文档高度不大于窗口高度，数据较少，自动加载下方数据
   autoLoad() {
+    // 滚动内容高度
+    const scrollContentHeight = this._scrollNode.scrollHeight;
     if(this.props.onBottomLoad && this.props.autoLoad) {
-      if((this._scrollContentHeight - this._threshold) <= this._windowHeight) {
+      if((scrollContentHeight - this._threshold) <= this._windowHeight) {
         this.loadDown();
       }
     }
@@ -38,15 +83,17 @@ class SwipeLoad extends React.Component {
   }
 
   render() {
-    const { children, onBottomLoad, bottomNode } = this.props;
+    const { topState, bottomState } = this.state;
+    const { children, topNode, bottomNode } = this.props;
 
     return (
-      <div className="uniform-cpnt-SwipeLoad">
+      <div className="uniform-cpnt-SwipeLoad" ref="swipeLoadRoot">
+        <div ref="topNode" className="sl-top-node">
+          { topNode[topState] }
+        </div>
         {children}
         <div ref="bottomNode" className="sl-bottom-node">
-        { // 如果需要底部加载，提前在下方插入 dom
-          onBottomLoad ? bottomNode['pulling'] : '' // 上拉阶段
-        }
+          { bottomNode[bottomState] }
         </div>
       </div>
     );
@@ -64,10 +111,18 @@ SwipeLoad.propTypes = {
 
 SwipeLoad.defaultProps = {
   autoLoad: true,
+  threshold: 10,
   bottomNode: {
-    pulling: <div>↑上拉加载更多</div>,
+    normal: '',
+    pull: <div>↑上拉加载更多</div>,
     loading: <div>上拉加载中...</div>,
     noData: <div>没有更多了</div>
+  },
+  topNode: {
+    normal: '',
+    pull: <div>↓下拉刷新</div>,
+    update: <div>↑释放更新</div>,
+    loading: <div>加载中...</div>
   }
 };
 

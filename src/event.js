@@ -1,4 +1,4 @@
-// 浏览器事件封装
+// 浏览器事件封装，支持一次监听多个事件
 
 export function on(el, eventName, cb, opts) {
   opts = opts || false;

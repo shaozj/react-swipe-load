@@ -2,7 +2,7 @@
   "entry": "src/index.test.js",
   "disableCSSModules": true,
   "publicPath": "/",
-  "outputPath": "./build",
+  "outputPath": "./docs",
   "useBabelrc": false,
   "extraBabelPlugins": null,
   "extraBabelPresets": [],

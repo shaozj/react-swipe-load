@@ -10,8 +10,8 @@ class SwipeLoad extends React.Component {
     super(props);
 
     this.state = {
-      topState: this.props.noMoreData ? 'normal' : 'pull', // 'normal', 'pull', 'update', 'loading'
-      bottomState: 'normal', // 'normal', 'pull', 'loading', 'noMoreData'
+      topState: 'normal', // 'normal', 'pull', 'update', 'loading'
+      bottomState: this.props.noMoreData ? 'normal' : 'pull', // 'normal', 'pull', 'loading', 'noMoreData'
       topDomHeight: 0 // 顶部下拉刷新节点的高度
     };
   }

@@ -10,7 +10,7 @@ class SwipeLoad extends React.Component {
     super(props);
 
     this.state = {
-      topState: 'normal', // 'normal', 'pull', 'update', 'loading'
+      topState: this.props.noMoreData ? 'normal' : 'pull', // 'normal', 'pull', 'update', 'loading'
       bottomState: 'normal', // 'normal', 'pull', 'loading', 'noMoreData'
       topDomHeight: 0 // 顶部下拉刷新节点的高度
     };
@@ -211,7 +211,8 @@ SwipeLoad.propTypes = {
   bottomThreshold : PropTypes.number, // 底部提前加载的阈值距离
   topNode: PropTypes.object, // 页面顶部插入的节点，在不同状态下展示不同内容
   bottomNode: PropTypes.object, // 页面底部插入的节点
-  autoLoad: PropTypes.bool // 数据不足一屏时是否自定加载
+  autoLoad: PropTypes.bool, // 数据不足一屏时是否自定加载
+  noMoreData: PropTypes.bool // 是否没有更多数据了
 };
 
 SwipeLoad.defaultProps = {
@@ -229,7 +230,8 @@ SwipeLoad.defaultProps = {
     pull: <div>↓下拉刷新</div>,
     update: <div>↑释放更新</div>,
     loading: <div>加载中...</div>
-  }
+  },
+  noMoreData: false
 };
 
 SwipeLoad.displayName = 'SwipeLoad';

@@ -76,14 +76,14 @@ class Test extends React.Component {
     setTimeout(() => {
       const mockData = mockData1.concat(mockData2);
       this.setState({ mockData });
-      SwipeLoad.reset();
-    }, 1500);
+      SwipeLoad.reset({ noMoreData : true });
+    }, 500);
   }
 
   onTopRefresh = (SwipeLoad) => {
     console.log('on top refresh'); // eslint-disable-line
     // location.reload();
-    setTimeout(() => SwipeLoad.reset(), 1500);
+    setTimeout(() => SwipeLoad.reset({}), 1500);
   }
 
   render() {

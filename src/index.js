@@ -11,7 +11,7 @@ class SwipeLoad extends React.Component {
 
     this.state = {
       topState: 'normal', // 'normal', 'pull', 'update', 'loading'
-      bottomState: 'normal', // 'normal', 'pull', 'loading', 'noData'
+      bottomState: 'normal', // 'normal', 'pull', 'loading', 'noMoreData'
       topDomHeight: 0 // 顶部下拉刷新节点的高度
     };
   }
@@ -28,46 +28,64 @@ class SwipeLoad extends React.Component {
     this.autoLoad();
 
     // 监听窗口调整
-    on(window, 'resize', () => {
-      clearTimeout(this.timer);
-      this.timer = setTimeout(() => {
-        // 重新获取win显示区高度
-        this._windowHeight = document.documentElement.clientHeight;
-        this.autoLoad();
-      }, 150);
-    });
+    on(window, 'resize', this.onWindowResize);
 
     // 监听触摸事件
-    on(scrollNode, 'touchstart', e => {
-      if (!this.loading) {
-        this.onTouchstart(e);
-      }
-    });
+    on(scrollNode, 'touchstart', this.onTouchstart);
+    on(scrollNode, 'touchmove', this.onTouchmove);
+    on(scrollNode, 'touchend', this.onTouchend);
 
-    on(scrollNode, 'touchmove', e => {
-      if (!this.loading) {
-        this.onTouchmove(e);
-      }
-    });
-
-    on(scrollNode, 'touchend', e => {
-      if (!this.loading) {
-        this.onTouchend(e);
-      }
-    });
+    // 监听 scroll 事件，在 touch 事件中处理“上拉加载更多”不合理，在页面滚动到底部时可能不会触发加载
+    on(window, 'scroll', this.onWinScroll);
   }
 
-  onTouchstart(e) {
+  componentWillUnmount() {
+    const scrollNode = this._scrollNode;
+
+    off(scrollNode, 'touchstart', this.onTouchstart);
+    off(scrollNode, 'touchmove', this.onTouchmove);
+    off(scrollNode, 'touchend', this.onTouchend);
+  }
+
+  onWindowResize = () => {
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => {
+      // 重新获取win显示区高度
+      this._windowHeight = document.documentElement.clientHeight;
+      this.autoLoad();
+    }, 150);
+  }
+
+  // 监听窗口滚动事件，加载更多
+  onWinScroll = () => {
+    const scrollTop = this._scrollNode.scrollTop; // 滚动距离
+    const scrollHeight = this._scrollHeight; // 滚动内容高度
+    const winHeight = this._windowHeight; // 窗口高度
+    // 上拉加载
+    if (this.props.onBottomLoad &&
+      !this.loading &&
+      this.state.bottomState != 'noMoreData' &&
+      (scrollTop + winHeight) > (scrollHeight - this.props.bottomThreshold))
+    {
+      this.loadBottom();
+    }
+  }
+
+  onTouchstart = (e) => {
+    if (this.loading) {
+      return;
+    }
     const touch = e.changedTouches[0];
     this._startY = touch.clientY;
     // 滚动内容高度，不放在 onTouchmove 中计算，提高性能
     this._scrollHeight = this._scrollNode.scrollHeight;
   }
 
-  onTouchmove(e) {
+  onTouchmove = (e) => {
+    if (this.loading) {
+      return;
+    }
     const scrollTop = this._scrollNode.scrollTop; // 滚动距离
-    const scrollHeight = this._scrollHeight; // 滚动内容高度
-    const winHeight = this._windowHeight; // 窗口高度
     const touch = e.changedTouches[0];
     const curY = touch.clientY;
     const diffY = curY - this._startY;
@@ -97,24 +115,13 @@ class SwipeLoad extends React.Component {
 
       this.setState({ topDomHeight: this._offsetY });
     }
-    // 上拉加载
-    else if (this.props.onBottomLoad &&
-      !this.loading &&
-      diffY < 0 &&
-      (scrollTop + winHeight) > (scrollHeight - this.props.bottomThreshold))
-    {
-      this._place = 'bottom';
-      this.loading = true;
-      this.setState({ bottomState: 'loading' });
-      this.props.onBottomLoad && this.props.onBottomLoad(this);
-    }
-
   }
 
-  onTouchend(e) {
+  onTouchend = (e) => {
+    if (this.loading) {
+      return;
+    }
     const scrollTop = this._scrollNode.scrollTop; // 滚动距离
-    const scrollHeight = this._scrollHeight; // 滚动内容高度
-    const winHeight = this._windowHeight; // 窗口高度
     const touch = e.changedTouches[0];
     const curY = touch.clientY;
     const diffY = curY - this._startY;
@@ -145,24 +152,36 @@ class SwipeLoad extends React.Component {
     }
   }
 
+  // 上拉加载更多
+  loadBottom() {
+    this._place = 'bottom';
+    this.loading = true;
+    this.setState({ bottomState: 'loading' });
+    this.props.onBottomLoad && this.props.onBottomLoad(this);
+  }
+
   // 如果文档高度不大于窗口高度，数据较少，自动加载下方数据
   autoLoad() {
     // 滚动内容高度
     const scrollContentHeight = this._scrollNode.scrollHeight;
     if(this.props.onBottomLoad && this.props.autoLoad) {
       if((scrollContentHeight - this.props.bottomThreshold) <= this._windowHeight) {
-        this.loadDown();
+        this.loadBottom();
       }
     }
   }
 
   // 重置，下拉刷新后，需要重置状态
-  reset() {
+  reset({ noMoreData = false }) {
     if (this._place === 'top') {
       const topDomHeight = 0;
       this.setState({ topDomHeight });
     } else if (this._place === 'bottom') {
-      this.setState({ bottomState: 'normal' });
+      if (noMoreData) {
+        this.setState({ bottomState: 'noMoreData' });
+      } else {
+        this.setState({ bottomState: 'pull' });
+      }
     }
     this.loading = false;
   }
@@ -198,12 +217,12 @@ SwipeLoad.propTypes = {
 SwipeLoad.defaultProps = {
   autoLoad: true,
   topThreshold: 50,
-  bottomThreshold: 10,
+  bottomThreshold: 20,
   bottomNode: {
     normal: '',
     pull: <div>↑上拉加载更多</div>,
     loading: <div>上拉加载中...</div>,
-    noData: <div>没有更多了</div>
+    noMoreData: <div>没有更多内容了</div>
   },
   topNode: {
     normal: '',

@@ -1,7 +1,7 @@
 {
   "entry": "src/index.test.js",
   "disableCSSModules": true,
-  "publicPath": "/",
+  "publicPath": "/react-swipe-load/",
   "outputPath": "./docs",
   "useBabelrc": false,
   "extraBabelPlugins": null,

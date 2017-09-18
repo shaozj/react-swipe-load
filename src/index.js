@@ -60,7 +60,7 @@ class SwipeLoad extends React.Component {
   // 监听窗口滚动事件，加载更多
   onWinScroll = () => {
     const scrollTop = this._scrollNode.scrollTop; // 滚动距离
-    const scrollHeight = this._scrollHeight; // 滚动内容高度
+    const scrollHeight = this._scrollNode.scrollHeight; // 滚动内容高度
     const winHeight = this._windowHeight; // 窗口高度
     // 上拉加载
     if (this.props.onBottomLoad &&
@@ -78,8 +78,6 @@ class SwipeLoad extends React.Component {
     }
     const touch = e.changedTouches[0];
     this._startY = touch.clientY;
-    // 滚动内容高度，不放在 onTouchmove 中计算，提高性能
-    this._scrollHeight = this._scrollNode.scrollHeight;
   }
 
   onTouchmove = (e) => {

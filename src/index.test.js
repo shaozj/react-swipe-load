@@ -91,8 +91,7 @@ class Test extends React.Component {
     const { mockData } = this.state;
     const props = {
       onBottomLoad: this.onBottomLoad,
-      onTopRefresh: this.onTopRefresh,
-      noMoreData: false
+      onTopRefresh: this.onTopRefresh
     };
 
     return  <SwipeLoad {...props}>

@@ -218,7 +218,7 @@ SwipeLoad.propTypes = {
 SwipeLoad.defaultProps = {
   autoLoad: true,
   topThreshold: 50,
-  bottomThreshold: 20,
+  bottomThreshold: 30,
   bottomNode: {
     normal: '',
     pull: <div>↑上拉加载更多</div>,

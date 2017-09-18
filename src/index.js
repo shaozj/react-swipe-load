@@ -45,6 +45,7 @@ class SwipeLoad extends React.Component {
     off(scrollNode, 'touchstart', this.onTouchstart);
     off(scrollNode, 'touchmove', this.onTouchmove);
     off(scrollNode, 'touchend', this.onTouchend);
+    off(window, 'scroll', this.onWinScroll);
   }
 
   onWindowResize = () => {

@@ -2,20 +2,40 @@
 
 export function on(el, eventName, cb, opts) {
   opts = opts || false;
+  const eventNameArr = eventName.split(/\s+/);
+
   if (el.addEventListener) {
-    el.addEventListener(eventName, cb, opts);
+    eventNameArr.map(name => {
+      if (name) {
+        el.addEventListener(name, cb, opts);
+      }
+    });
   } else if (el.attachEvent) {
-    el.attachEvent(`on${eventName}`, e => {
-      cb.call(el, e || window.event);
+    eventNameArr.map(name => {
+      if (name) {
+        el.attachEvent(`on${name}`, e => {
+          cb.call(el, e || window.event);
+        });
+      }
     });
   }
 }
 
 export function off(el, eventName, cb, opts) {
   opts = opts || false;
+  const eventNameArr = eventName.split(/\s+/);
+
   if (el.removeEventListener) {
-    el.removeEventListener(eventName, cb, opts);
+    eventNameArr.map(name => {
+      if (name) {
+        el.removeEventListener(name, cb, opts);
+      }
+    });
   } else if (el.detachEvent) {
-    el.detachEvent(`on${eventName}`, cb);
+    eventNameArr.map(name => {
+      if (name) {
+        el.detachEvent(`on${name}`, cb);
+      }
+    });
   }
 }

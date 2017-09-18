@@ -63,12 +63,15 @@ const mockData2 = [
 
 class Test extends React.Component {
 
-  onBottomLoad = () => {
+  onBottomLoad = (SwipeLoad) => {
     console.log('on bottom load');  // eslint-disable-line
+    SwipeLoad.reset();
   }
 
-  onTopRefresh = () => {
+  onTopRefresh = (SwipeLoad) => {
     console.log('on top refresh'); // eslint-disable-line
+    // location.reload();
+    SwipeLoad.reset();
   }
 
   render() {

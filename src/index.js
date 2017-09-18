@@ -102,21 +102,28 @@ class SwipeLoad extends React.Component {
     const diffY = curY - this._startY;
     const absY = Math.abs(diffY);
 
+    if (absY > 0) {
+      this._place = 'top';
+    } else {
+      this._place = 'bottom';
+    }
+
     // 下拉刷新
     if (diffY > 0 && scrollTop <= 0 && this.props.onTopRefresh) {
       // 动画
       this._topNode.style.transition = 'all 300ms';
       this._topNode.style.WebkitTransition = 'all 300ms';
+      this._topNode.style.MozTransition = 'all 300ms';
 
       if(absY > this.props.topThreshold) {
-        this._topNode.style.height = this._topNode.children[0].clientHeight;
+        this._topNode.style.height = this._topNode.children[0].clientHeight + 'px';
         this.setState({ topState: 'loading' });
         this.loading = true;
-        this.props.onTopRefresh();
+        this.props.onTopRefresh(this);
       } else {
-        this._topNode.style.height = '0';
-        on(this._topNode, 'webkitTransitionEnd mozTransitionEnd transitionend', () => {
-          this.upInsertDOM = false;
+        this._topNode.style.height = 0;
+        on(this._topNode, 'transitionend webkitTransitionEnd mozTransitionEnd', () => {
+          this.setState({ topState: 'normal' });
         });
       }
     }
@@ -136,6 +143,19 @@ class SwipeLoad extends React.Component {
   // 加载底部更多内容
   loadDown() {
     this.props.onBottomLoad && this.props.onBottomLoad();
+  }
+
+  // 重置，下拉刷新后，需要重置状态
+  reset() {
+    this.loading = false;
+    if (this._place = 'top') {
+      this._topNode.style.height = 0;
+      on(this._topNode, 'transitionend webkitTransitionEnd mozTransitionEnd', () => {
+        this.setState({ topState: 'normal' });
+      });
+    } else {
+
+    }
   }
 
   render() {

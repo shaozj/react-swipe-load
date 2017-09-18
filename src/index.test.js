@@ -71,7 +71,7 @@ class Test extends React.Component {
   onTopRefresh = (SwipeLoad) => {
     console.log('on top refresh'); // eslint-disable-line
     // location.reload();
-    SwipeLoad.reset();
+    setTimeout(() => SwipeLoad.reset(), 1500);
   }
 
   render() {

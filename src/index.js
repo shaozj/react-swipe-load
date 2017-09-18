@@ -73,6 +73,11 @@ class SwipeLoad extends React.Component {
     const diffY = curY - this._startY;
     const absY = Math.abs(diffY);
 
+    // 去除动画, 为了可以得到下来位移 this._offsetY, 不因为动画而只移动元素高度
+    this._topNode.style.transition = '';
+    this._topNode.style.WebkitTransition = '';
+    this._topNode.style.MozTransition = '';
+
     // 下拉刷新
     if (diffY > 0 && scrollTop <= 0 && this.props.onTopRefresh) {
       e.preventDefault();
@@ -125,9 +130,6 @@ class SwipeLoad extends React.Component {
       } else {
         const topDomHeight = 0;
         this.setState({ topDomHeight });
-        on(this._topNode, 'transitionend webkitTransitionEnd mozTransitionEnd', () => {
-          this.setState({ topState: 'normal' });
-        });
       }
     }
   }
@@ -154,13 +156,6 @@ class SwipeLoad extends React.Component {
     if (this._place = 'top') {
       const topDomHeight = 0;
       this.setState({ topDomHeight });
-      on(this._topNode, 'transitionend webkitTransitionEnd mozTransitionEnd', () => {
-        this.setState({ topState: 'normal' });
-        // 去除动画
-        this._topNode.style.transition = '';
-        this._topNode.style.WebkitTransition = '';
-        this._topNode.style.MozTransition = '';
-      });
     } else {
 
     }

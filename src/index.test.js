@@ -67,9 +67,14 @@ class Test extends React.Component {
     console.log('on bottom load');  // eslint-disable-line
   }
 
+  onTopRefresh = () => {
+    console.log('on top refresh'); // eslint-disable-line
+  }
+
   render() {
     const porps = {
-      onBottomLoad: this.onBottomLoad
+      onBottomLoad: this.onBottomLoad,
+      onTopRefresh: this.onTopRefresh
     };
 
     return  <SwipeLoad {...porps}>

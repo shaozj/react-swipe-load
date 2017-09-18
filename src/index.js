@@ -11,12 +11,15 @@ class SwipeLoad extends React.Component {
 
     this.state = {
       topState: 'normal', // 'normal', 'pull', 'update', 'loading'
-      bottomState: 'normal' // 'normal', 'pull', 'loading', 'noData'
+      bottomState: 'normal', // 'normal', 'pull', 'loading', 'noData'
+      topDomHeight: 0 // 顶部下拉刷新节点的高度
     };
   }
 
   componentDidMount() {
     this._scrollNode = document.body; // 写死滚动区域为 body
+    this._topNode = this.refs.topNode;
+    this._bottomNode = this.refs.bottomNode;
     const scrollNode = this._scrollNode;
 
     // 获取win显示区高度
@@ -41,7 +44,7 @@ class SwipeLoad extends React.Component {
       }
     });
 
-    on(scrollNode, 'touchmode', e => {
+    on(scrollNode, 'touchmove', e => {
       if (!this.loading) {
         this.onTouchmove(e);
       }
@@ -54,16 +57,69 @@ class SwipeLoad extends React.Component {
     });
   }
 
-  onTouchstart() {
+  onTouchstart(e) {
+    const touch = e.changedTouches[0];
+    this._startY = touch.clientY;
+    // 滚动内容高度，不放在 onTouchmove 中计算，提高性能
+    this._scrollHeight = this._scrollNode.scrollHeight;
+  }
+
+  onTouchmove(e) {
+    const scrollTop = this._scrollNode.scrollTop; // 滚动距离
+    const scrollHeight = this._scrollHeight; // 滚动内容高度
+    const winHeight = this._windowHeight; // 窗口高度
+    const touch = e.changedTouches[0];
+    const curY = touch.clientY;
+    const diffY = curY - this._startY;
+    const absY = Math.abs(diffY);
+
+    // 下拉刷新
+    if (diffY > 0 && scrollTop <= 0 && this.props.onTopRefresh) {
+      e.preventDefault();
+      if(absY <= this.props.topThreshold){
+        this._offsetY = absY;
+        this.setState({ topState: 'pull' });
+      } // 指定距离 < 下拉距离 < 指定距离*2
+      else if(absY > this.props.topThreshold && absY <= this.props.topThreshold * 2){
+        this._offsetY = this.props.topThreshold + (absY - this.props.topThreshold) * 0.5;
+        this.setState({ topState: 'update' });
+      } // 下拉距离 > 指定距离*2
+      else{
+        this._offsetY = this.props.topThreshold + this.props.topThreshold * 0.5 + (absY - this.props.topThreshold * 2) * 0.2;
+      }
+
+      this.setState({ topDomHeight: this._offsetY });
+    }
 
   }
 
-  onTouchmove() {
+  onTouchend(e) {
+    const scrollTop = this._scrollNode.scrollTop; // 滚动距离
+    const scrollHeight = this._scrollHeight; // 滚动内容高度
+    const winHeight = this._windowHeight; // 窗口高度
+    const touch = e.changedTouches[0];
+    const curY = touch.clientY;
+    const diffY = curY - this._startY;
+    const absY = Math.abs(diffY);
 
-  }
+    // 下拉刷新
+    if (diffY > 0 && scrollTop <= 0 && this.props.onTopRefresh) {
+      // 动画
+      this._topNode.style.transition = 'all 300ms';
+      this._topNode.style.WebkitTransition = 'all 300ms';
 
-  onTouchend() {
-
+      if(absY > this.props.topThreshold) {
+        this._topNode.style.height = this._topNode.children[0].clientHeight;
+        this.setState({ topState: 'loading' });
+        this.loading = true;
+        this.props.onTopRefresh();
+      } else {
+        this._topNode.style.height = '0';
+        on(this._topNode, 'webkitTransitionEnd mozTransitionEnd transitionend', () => {
+          this.upInsertDOM = false;
+        });
+      }
+    }
   }
 
   // 如果文档高度不大于窗口高度，数据较少，自动加载下方数据
@@ -71,7 +127,7 @@ class SwipeLoad extends React.Component {
     // 滚动内容高度
     const scrollContentHeight = this._scrollNode.scrollHeight;
     if(this.props.onBottomLoad && this.props.autoLoad) {
-      if((scrollContentHeight - this._threshold) <= this._windowHeight) {
+      if((scrollContentHeight - this.props.bottomThreshold) <= this._windowHeight) {
         this.loadDown();
       }
     }
@@ -83,12 +139,12 @@ class SwipeLoad extends React.Component {
   }
 
   render() {
-    const { topState, bottomState } = this.state;
+    const { topState, bottomState, topDomHeight } = this.state;
     const { children, topNode, bottomNode } = this.props;
 
     return (
       <div className="uniform-cpnt-SwipeLoad" ref="swipeLoadRoot">
-        <div ref="topNode" className="sl-top-node">
+        <div ref="topNode" className="sl-top-node" style={{ height: topDomHeight }}>
           { topNode[topState] }
         </div>
         {children}
@@ -103,7 +159,8 @@ class SwipeLoad extends React.Component {
 SwipeLoad.propTypes = {
   onTopRefresh: PropTypes.func, // 下拉刷新回调函数
   onBottomLoad: PropTypes.func, // 上拉加载回调函数
-  threshold: PropTypes.number, // 底部提前加载的距离
+  topThreshold: PropTypes.number,  // 顶部下拉刷新的阈值距离
+  bottomThreshold : PropTypes.number, // 底部提前加载的阈值距离
   topNode: PropTypes.object, // 页面顶部插入的节点，在不同状态下展示不同内容
   bottomNode: PropTypes.object, // 页面底部插入的节点
   autoLoad: PropTypes.bool // 数据不足一屏时是否自定加载
@@ -111,7 +168,8 @@ SwipeLoad.propTypes = {
 
 SwipeLoad.defaultProps = {
   autoLoad: true,
-  threshold: 10,
+  topThreshold: 50,
+  bottomThreshold: 10,
   bottomNode: {
     normal: '',
     pull: <div>↑上拉加载更多</div>,

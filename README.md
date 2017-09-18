@@ -12,7 +12,7 @@ Depends on [silki](https://www.npmjs.com/package/silki)
 
 ## demo
 
-<https://shaozj.github.io/react-swipe-load>  
+[react-swipe-load demo](https://shaozj.github.io/react-swipe-load) 
 
 ## How to use
 

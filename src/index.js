@@ -79,11 +79,13 @@ class SwipeLoad extends React.Component {
       if(absY <= this.props.topThreshold){
         this._offsetY = absY;
         this.setState({ topState: 'pull' });
-      } // 指定距离 < 下拉距离 < 指定距离*2
+      }
+      // 指定距离 < 下拉距离 < 指定距离*2
       else if(absY > this.props.topThreshold && absY <= this.props.topThreshold * 2){
         this._offsetY = this.props.topThreshold + (absY - this.props.topThreshold) * 0.5;
         this.setState({ topState: 'update' });
-      } // 下拉距离 > 指定距离*2
+      }
+      // 下拉距离 > 指定距离*2
       else{
         this._offsetY = this.props.topThreshold + this.props.topThreshold * 0.5 + (absY - this.props.topThreshold * 2) * 0.2;
       }
@@ -116,12 +118,13 @@ class SwipeLoad extends React.Component {
       this._topNode.style.MozTransition = 'all 300ms';
 
       if(absY > this.props.topThreshold) {
-        this._topNode.style.height = this._topNode.children[0].clientHeight + 'px';
-        this.setState({ topState: 'loading' });
+        const topDomHeight = this._topNode.children[0] && this._topNode.children[0].clientHeight + 'px' || 0;
+        this.setState({ topState: 'loading', topDomHeight });
         this.loading = true;
         this.props.onTopRefresh(this);
       } else {
-        this._topNode.style.height = 0;
+        const topDomHeight = 0;
+        this.setState({ topDomHeight });
         on(this._topNode, 'transitionend webkitTransitionEnd mozTransitionEnd', () => {
           this.setState({ topState: 'normal' });
         });
@@ -149,9 +152,14 @@ class SwipeLoad extends React.Component {
   reset() {
     this.loading = false;
     if (this._place = 'top') {
-      this._topNode.style.height = 0;
+      const topDomHeight = 0;
+      this.setState({ topDomHeight });
       on(this._topNode, 'transitionend webkitTransitionEnd mozTransitionEnd', () => {
         this.setState({ topState: 'normal' });
+        // 去除动画
+        this._topNode.style.transition = '';
+        this._topNode.style.WebkitTransition = '';
+        this._topNode.style.MozTransition = '';
       });
     } else {
 

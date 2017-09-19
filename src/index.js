@@ -18,8 +18,6 @@ class SwipeLoad extends React.Component {
 
   componentDidMount() {
     this._scrollNode = document.body; // 写死滚动区域为 body
-    this._topNode = this.refs.topNode;
-    this._bottomNode = this.refs.bottomNode;
     const scrollNode = this._scrollNode;
 
     // 获取win显示区高度
@@ -192,11 +190,11 @@ class SwipeLoad extends React.Component {
 
     return (
       <div className="uniform-cpnt-SwipeLoad" ref="swipeLoadRoot">
-        <div ref="topNode" className="sl-top-node" style={{ height: topDomHeight }}>
+        <div ref={node => this._topNode = node} className="sl-top-node" style={{ height: topDomHeight }}>
           { topNode[topState] }
         </div>
         {children}
-        <div ref="bottomNode" className="sl-bottom-node">
+        <div ref={node => this._bottomNode = node} className="sl-bottom-node">
           { bottomNode[bottomState] }
         </div>
       </div>

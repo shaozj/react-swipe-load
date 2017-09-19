@@ -170,7 +170,7 @@ class SwipeLoad extends React.Component {
     }
   }
 
-  // 重置，下拉刷新后，需要重置状态
+  // 重置，下拉刷新或上拉加载后，需要重置状态
   reset({ noMoreData = false }) {
     if (this._place === 'top') {
       const topDomHeight = 0;

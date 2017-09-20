@@ -1,7 +1,7 @@
 {
   "name": "react-swipe-load",
   "private": false,
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "react-swipe-load, support down swipe refresh & up swipe load more data",
   "main": "lib/index.js",
   "scripts": {

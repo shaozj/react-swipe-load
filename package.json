@@ -1,7 +1,7 @@
 {
   "name": "react-swipe-load",
   "private": false,
-  "version": "0.0.5",
+  "version": "1.0.0",
   "description": "react-swipe-load, support down swipe refresh & up swipe load more data",
   "main": "lib/index.js",
   "scripts": {
@@ -15,7 +15,12 @@
     "fastpush": "npm run compile && git add . && git commit -m 'compile' && git push origin master"
   },
   "repository": "https://github.com/shaozj/react-swipe-load",
-  "keywords": ["react", "swipe", "swipe refresh", "swipe load"],
+  "keywords": [
+    "react",
+    "swipe",
+    "swipe refresh",
+    "swipe load"
+  ],
   "author": "ShaoZhenjiang<814184517@qq.com>",
   "devDependencies": {
     "babel-cli": "^6.23.0",

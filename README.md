@@ -12,6 +12,8 @@ Depends on [silki](https://www.npmjs.com/package/silki)
 
 ## demo
 
+![image](https://user-images.githubusercontent.com/7326406/30642698-764620ee-9e3e-11e7-8488-08d8e3c840be.png)
+
 [react-swipe-load demo](https://shaozj.github.io/react-swipe-load) 
 
 ## How to use
